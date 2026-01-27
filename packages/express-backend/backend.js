@@ -1,7 +1,9 @@
+import cors from "cors";
 import express from "express";
 const app = express();
 const port = 8000;
 
+app.use(cors());
 app.use(express.json());
 
 const users = {
@@ -32,6 +34,11 @@ const users = {
       job: "Bartender"
     }
   ]
+};
+
+//honestly i was thinking about like doing three random letters and three random numbers, but this is waaaaay simpler and easier
+const MakeId = () => {
+  return Math.random().toString().substr(2,6)
 };
 
 const findUserByName = (name) => {
@@ -74,12 +81,13 @@ app.delete("/users/:id", (req, res) => {
 
 app.post("/users", (req, res) => {
   const userToAdd = req.body;
+  userToAdd.id = MakeId();
   addUser(userToAdd);
   res.status(201).send(userToAdd);
 });
 
 app.get("/users/:id", (req, res) => {
-  const id = req.params["id"]; // or req.params.id
+  const id = req.params["id"]; 
   let result = findUserById(id);
   if (result === undefined) {
     res.status(404).send("Resource not found.");
